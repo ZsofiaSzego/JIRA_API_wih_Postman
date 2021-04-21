@@ -3,12 +3,12 @@ Basic Jira API tests through REST API requests made in Postman.
 
 The collection saved in json contains the following requests:
 
-add issue
-add comment
-get issue comment
-edit comment
-delete comment
-delete issue
+- add issue
+- add comment
+- get issue comment
+- edit comment
+- delete comment
+- delete issue
 
 The addedd issue is referenced with issueId variable and the addedd comment is with commentId.
 
