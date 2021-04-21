@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "fa126fee-8954-47fd-8c91-0125e578b493",
+		"name": "JiraAPITest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "add issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+							"bodyData = JSON.parse(responseBody)",
+							"idValue = bodyData.id",
+							"pm.environment.set(\"issueId\", idValue);",
+							"postman.setNextRequest('add comment')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fields\": {\n       \"project\":\n       {\n          \"key\": \"PP\"\n       },\n       \"summary\": \"REST API create issue\",\n       \"description\": \"Creating of an issue using project keys and issue type names using the REST API\",\n       \"issuetype\": {\n          \"name\": \"Task\"\n       }\n   }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+							"bodyData = JSON.parse(responseBody)",
+							"idValue = bodyData.id",
+							"pm.environment.set(\"commentId\", idValue);",
+							"postman.setNextRequest('get issue comment')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"body\": \"Add comment test using REST API.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}/comment",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"{{issueId}}",
+						"comment"
+					]
+				},
+				"description": "add comment to issue"
+			},
+			"response": []
+		},
+		{
+			"name": "get issue comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"postman.setNextRequest('edit comment')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"self\": \"https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}/comment\",\n    \"id\": {{commentId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}/comment/{{commentId}}",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"{{issueId}}",
+						"comment",
+						"{{commentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Summary edited\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.body).to.eql(\"Edit issue comment through REST API.\");",
+							"});",
+							"postman.setNextRequest('delete comment')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"body\": \"Edit issue comment through REST API.\",\n    \"visibility\": {\n        \"type\": \"role\",\n        \"value\": \"Administrators\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}/comment/{{commentId}}",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"{{issueId}}",
+						"comment",
+						"{{commentId}}"
+					]
+				},
+				"description": "edit issue comment"
+			},
+			"response": []
+		},
+		{
+			"name": "delete comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"postman.setNextRequest('delete issue')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}/comment/{{commentId}}",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"{{issueId}}",
+						"comment",
+						"{{commentId}}"
+					]
+				},
+				"description": "del comment"
+			},
+			"response": []
+		},
+		{
+			"name": "delete issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{jirapw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{jiraUname}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/{{issueId}}",
+					"protocol": "https",
+					"host": [
+						"jira-auto",
+						"codecool",
+						"metastage",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"{{issueId}}"
+					]
+				},
+				"description": "del issue"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "CCAutoTest19.",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "automation1",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "self",
+			"value": "https://jira-auto.codecool.metastage.net/rest/api/2/issue/10308"
+		},
+		{
+			"key": "jirapw",
+			"value": "validpasswor"
+		},
+		{
+			"key": "jiraUname",
+			"value": "validusername"
+		}
+	]
+}
